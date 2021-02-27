@@ -28,7 +28,6 @@
 add_guest_additions_to_clonezilla_iso() {
 
     VMPATH=$PWD
-    
     bind_mount_clonezilla_iso
 
     cat > squashfs-root/update_clonezilla.sh << EOF
@@ -216,10 +215,10 @@ fetch_process_clonezilla_iso() {
     fi
 
     [ ! -d mnt2 ] &&  mkdir mnt2  ||  { rm ${verb} -rf mnt2 && mkdir mnt2; }
-
     "${VERBOSE}"  && echo "[INF] Mounting CloneZilla CD ${CLONEZILLACD}"
-    mount -oloop "${CLONEZILLACD}" ./mnt  \
-     	|| echo "[ERR] Could not mount ${CLONEZILLACD} to mnt"
+    
+    mount -oloop "clonezilla.iso" ./mnt  \
+     	|| echo "[ERR] Could not mount clonezilla.iso to mnt/"
              exit 1; }
     "${VERBOSE}" \
         && echo "[INF] Now syncing CloneZilla CD to mnt2 in rw mode."
