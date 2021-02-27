@@ -87,8 +87,18 @@ EOF
 
     # this first ISO image is a "save" one: from virtual disk to clonezilla
     # image
+        
+    rm  -rf "mnt2/live/squashfs-root/"
 
-    clonezilla_to_iso "${CLONEZILLACD}" "mnt2"
+    [ ! -f "mnt2/syslinux/isohdpfx.bin" ] \
+        && cp -vf "clonezilla/syslinux/isohdpfx.bin" "mnt2/syslinux"
+
+    xorriso -split_size 2047m -as mkisofs  \
+	    -isohybrid-mbr "$2/syslinux/isohdpfx.bin"  \
+            -c syslinux/boot.cat   -b syslinux/isolinux.bin   -no-emul-boot \
+            -boot-load-size 4   -boot-info-table   -eltorito-alt-boot  \
+            -e boot/grub/efi.img \
+            -no-emul-boot   -isohybrid-gpt-basdat   -o "${CLONEZILLACD}" mnt2
 }
 
 bind_mount_clonezilla_iso() {
