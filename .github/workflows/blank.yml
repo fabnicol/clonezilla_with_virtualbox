@@ -1,9 +1,9 @@
 name: CloneZilla with virtualbox+
-
 on:
   push:
-    branches: 
-    - master
+
+    tags:
+      - 'v*' 
 
   workflow_dispatch:
 
@@ -22,7 +22,24 @@ jobs:
           sudo apt install util-linux squashfs-tools curl mkisofs util-linux xorriso xz-utils
           sudo ./build.sh clonezilla.iso clonezilla_with_virtualbox.iso
           
-      #- name: GitHub Upload Release Artifacts
-      #  uses: fabnicol/github-upload-release-artifacts-action@v1.2
-      #  with:
-      #    created_tag: v1.2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+          
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: ./clonezilla_with_virtualbox.iso
+          asset_name: clonezilla_with_virtualbox.iso
+          asset_content_type: application/octet-stream

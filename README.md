@@ -30,7 +30,7 @@ The program must be run as root.
 
 **Environment variables**   
 
-VERBOSE: false or true (default false)
+VERBOSE: false or true (default false)    
 DOWNLOAD_CLONEZILLA_PATH: can be set by the user.   
 In this case, the user should reset the contents of file SUMS.txt accordingly,  
 by checking the sums on sourceforge.  
