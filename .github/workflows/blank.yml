@@ -22,7 +22,7 @@ jobs:
           sudo apt install util-linux squashfs-tools curl mkisofs util-linux xorriso xz-utils
           sudo ./build.sh clonezilla.iso clonezilla_with_virtualbox.iso
           
-      - name: GitHub Upload Release Artifacts
-        uses: fabnicol/github-upload-release-artifacts-action@v1.2
-        with:
-          created_tag: v1.2
+      #- name: GitHub Upload Release Artifacts
+      #  uses: fabnicol/github-upload-release-artifacts-action@v1.2
+      #  with:
+      #    created_tag: v1.2
