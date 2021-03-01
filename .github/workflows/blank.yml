@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-steps:
+    steps:
       - uses: actions/checkout@v2
 
       - name: update repo
@@ -25,4 +25,4 @@ steps:
       - name: GitHub Upload Release Artifacts
         uses: fabnicol/github-upload-release-artifacts-action@v1.2
         with:
-           created_tag: 
+          created_tag: v1.2
