@@ -30,6 +30,18 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
+          body:  
+            The release was automatically created by the Git Actions workflow corresponding to directory .github in the repository.  
+            The input of this release is the CloneZilla release liked to in the Readme.   
+                          
+            **Technical note**   
+            The split parameter for archive saved (ocs-sr -i...) has been set to 4096 (MB), so that it exactly matches the new value set for xorriso split_size and there is no risk of a differing split limits (an issue was once noticed experimentally with split_limit set at 2017 for xorriso and an xz archive slightly bigger that 2GB).   
+
+            **Checksums**   
+            md5sum $(md5sum ./clonezilla_with_virtualbox.iso)   
+            sha1sum $(sha1sum ./clonezilla_with_virtualbox.iso)  
+            sha256sum $(sha256sum ./clonezilla_with_virtualbox.iso)  
+
           draft: false
           prerelease: false
           
