@@ -150,6 +150,18 @@ EOF
     umount -R -l mnt2
     rm -rf mnt2
     rm -rf ISOFILES
+
+    if [ -f "${CLONEZILLACD}" ]
+    then
+        echo "[MSG] Workflow created file ${CLONEZILLACD}."
+        echo "      with following checksums:"
+        echo "      md5sum: $(md5sum ${CLONEZILLACD})"       | tee checksums.txt
+        echo "      sha1sum: $(sha1sum ${CLONEZILLACD})"     | tee -a checksums.txt
+        echo "      sha256sum: $(sha256sum ${CLONEZILLACD})" | tee -a checksums.txt
+    else
+        echo "[ERR] Workflow failed to create file ${CLONEZILLACD}."
+    fi
+
 }
 
 bind_mount_clonezilla_iso() {
