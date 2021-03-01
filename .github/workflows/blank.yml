@@ -1,0 +1,28 @@
+name: CloneZilla with virtualbox+
+
+on:
+  push:
+    branches: 
+    - master
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+steps:
+      - uses: actions/checkout@v2
+
+      - name: update repo
+        run: sudo apt update 
+        
+      - name: build
+        run: |
+          sudo apt install util-linux squashfs-tools curl mkisofs util-linux xorriso xz-utils
+          sudo ./build.sh clonezilla.iso clonezilla_with_virtualbox.iso
+          
+      - name: GitHub Upload Release Artifacts
+        uses: fabnicol/github-upload-release-artifacts-action@v1.2
+        with:
+           created_tag: 
