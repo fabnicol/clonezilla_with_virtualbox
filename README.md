@@ -1,8 +1,11 @@
 ## clonezilla_with_virtualbox
    
-Scripts to build a clonezilla distribution with virtualbox    
-and virtualbox guest additions added to it.   
+Scripts to build a CloneZilla distribution with VirtualBox and VB 
+guest additions added to it.   
 Adapted from companion project MKG.   
+The build is entirely automated in the Github Actions workflow.
+The output of builds are released by the workflow itself.   
+See Release section.  
      
 **Dependencies:**    
    
@@ -19,8 +22,8 @@ Adapted from companion project MKG.
    
 `# ./build.sh inputfile.iso outputfile.iso`  
 
-If **inputfile.iso** is not a file, the program will try to download 
-a reference CloneZilla ISO file from Sourceforge (see below).
+If **inputfile.iso** is not a file, the program will try to download a reference 
+CloneZilla ISO file from Sourceforge (see below).
 If **inputfile.iso** is a file or if the download succeeds, the program
 will check the MD5 and SHA1 sums of the file against the values in SUMS.txt
 
