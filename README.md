@@ -4,7 +4,7 @@ Scripts to build a CloneZilla distribution with VirtualBox and VB
 guest additions added to it.   
 Adapted from companion project MKG.   
 The build is entirely automated in the Github Actions workflow.
-The output of builds are released by the workflow itself.   
+Builds are released by the workflow itself.   
 See Release section.  
      
 **Dependencies:**    
