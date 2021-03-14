@@ -97,6 +97,11 @@ then
     echo "[ERR] Error in VBoxLinuxAdditions run."
     exit 3
 fi    
+if ! /sbin/rcvboxadd quicksetup $(sed 's/linux-image-//' ${kernel})
+then
+    echo "[ERR] Could not create vbox guest additions module"
+    exit 3
+fi
 cd / || exit 2
 mkdir -p /home/partimag/image
 umount /mnt
