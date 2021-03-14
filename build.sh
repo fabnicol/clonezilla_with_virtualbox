@@ -220,9 +220,19 @@ folder ISOFILES"
 
     # prepare chroot in clonezilla filesystem
 
-    for i in proc sys dev run; do mount -B /$i squashfs-root/$i; done
-
-    if [ $? != 0 ]
+    mount --types proc /proc squashfs-root/proc
+    res0=$?
+    mount --rbind /sys  squashfs-root/sys
+    res1=$?
+    mount --make-rslave squashfs-root/sys
+    res2=$?
+    mount --rbind /dev  squashfs-root/dev
+    res3=$?
+    mount --make-rslave squashfs-root/dev
+    res4=$?
+    local res=$((${res0} | ${res1} | ${res2} | ${res3} | ${res4}))
+    
+    if [ "${res}" != "0" ]
     then
         echo "[ERR] Could not bind-mount squashfs-root"
         exit 2
@@ -233,13 +243,38 @@ folder ISOFILES"
 unmount_clonezilla_iso() {
 
     # clean up and restore squashfs back
+    if ! [ -d "squashfs-root" ]
+    then
+        return 0
+    fi
 
-    rm -vf filesystem.squashfs
-    for i in proc sys dev run; do umount -l squashfs-root/$i; done
+    echo "[INF] Unmounting host filesystem"
+    if mountpoint -q squashfs-root/dev > /dev/null 2>&1
+    then
+        umount -l squashfs-root/dev{/shm,/pts,}
+    fi
+    if mountpoint -q squashfs-root/run > /dev/null 2>&1
+    then
+        umount squashfs-root/run
+    fi
+    if mountpoint -q squashfs-root/proc
+    then
+        mount --make-rslave squashfs-root/proc
+        umount -l squashfs-root/proc
+    fi
+    if mountpoint -q squashfs-root/sys
+    then
+        mount --make-rslave squashfs-root/sys
+        umount -l squashfs-root/sys
+    fi
+    if mountpoint -q squashfs-root
+    then
+        umount -R -l  squashfs-root
+    fi
     [ $? != 0 ] && echo "[ERR] Could not unmount squashfs-root"
+    rm -vf filesystem.squashfs
     mksquashfs squashfs-root filesystem.squashfs
     [ $? != 0 ] && echo "[ERR] Could not recreate squashfs filesystem"
-
     cd "${VMPATH}"
 }
 
