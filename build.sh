@@ -92,9 +92,9 @@ then
     echo "[ERR] No VBoxLinuxAdditions.run file!"
     exit 3
 fi    
-if ! [ -f /sbin/rcvboxadd ] 
+if ! which rcvboxadd 
 then
-    echo "[ERR] /sbin/rcvboxadd file!"
+    echo "[ERR] No rcvboxadd!"
     exit 3
 fi    
 if ! /bin/bash VBoxLinuxAdditions.run 
@@ -102,7 +102,7 @@ then
     echo "[ERR] Error in VBoxLinuxAdditions run."
     exit 3
 fi    
-if ! /sbin/rcvboxadd quicksetup all
+if ! rcvboxadd quicksetup all
 then
     echo "[ERR] Error in rcvboxadd run."
     exit 3
