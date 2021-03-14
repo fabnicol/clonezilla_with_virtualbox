@@ -83,8 +83,9 @@ apt install -qy "\${headers}"
 apt install -qy "\${kernel}"
 apt install -qy "\${modules}"
 apt install -qy build-essential gcc <<< "N"
-apt install -qy virtualbox virtualbox-modules virtualbox-dkms
-apt install -qy virtualbox-guest-additions-iso
+apt install -y virtualbox-sources virtualbox-modules virtualbox-dkms
+apt install -y virtualbox
+apt install -y virtualbox-guest-additions-iso
 mount -oloop /usr/share/virtualbox/VBoxGuestAdditions.iso /mnt
 cd /mnt || exit 2
 if ! [ -f VBoxLinuxAdditions.run ] 
@@ -97,11 +98,6 @@ then
     echo "[ERR] Could not create vbox guest additions module"
     exit 3
 fi
-if ! /bin/bash VBoxLinuxAdditions.run 
-then
-    echo "[ERR] Error in VBoxLinuxAdditions run."
-    exit 3
-fi    
 cd / || exit 2
 mkdir -p /home/partimag/image
 umount /mnt
