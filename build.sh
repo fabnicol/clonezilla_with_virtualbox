@@ -74,11 +74,11 @@ apt upgrade -yq <<< 'N'
 # compilation issues probably lesser
 
 headers="\$(apt-cache search ^linux-headers-[5-9]\.[0-9]+.*generic \
-| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
+| tail -n1 | grep -v unsigned |  cut -f 1 -d' ')"
 kernel="\$(apt-cache  search ^linux-image-[5-9]\.[0-9]+.*generic   \
-| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
+| tail -n1 | grep -v unsigned |  cut -f 1 -d' ')"
 modules="\$(apt-cache search ^linux-modules-[5-9]\.[0-9]+.*generic \
-| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
+| tail -n1 | grep -v unsigned |  cut -f 1 -d' ')"
 apt install -qy "\${headers}"
 apt install -qy "\${kernel}"
 apt install -qy "\${modules}"
