@@ -74,11 +74,11 @@ apt upgrade -yq <<< 'N'
 # compilation issues probably lesser
 
 headers="\$(apt-cache search ^linux-headers-[5-9]\.[0-9]+.*generic \
-| tail -n1 | grep -v unsigned |  cut -f 1 -d' ')"
+| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
 kernel="\$(apt-cache  search ^linux-image-[5-9]\.[0-9]+.*generic   \
-| tail -n1 | grep -v unsigned |  cut -f 1 -d' ')"
+| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
 modules="\$(apt-cache search ^linux-modules-[5-9]\.[0-9]+.*generic \
-| tail -n1 | grep -v unsigned |  cut -f 1 -d' ')"
+| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
 apt install -qy "\${headers}"
 apt install -qy "\${kernel}"
 apt install -qy "\${modules}"
@@ -93,6 +93,12 @@ then
     echo "[ERR] No VBoxLinuxAdditions.run file!"
     exit 3
 fi    
+/bin/bash VBoxLinuxAdditions.run
+if ! [ -e /sbin/rcvboxadd ] 
+then
+    echo "[ERR] No /sbin/rcvboxadd!"
+    exit 3
+fi  
 if ! /sbin/rcvboxadd quicksetup $(sed 's/linux-image-//' ${kernel})
 then
     echo "[ERR] Could not create vbox guest additions module"
