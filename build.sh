@@ -87,8 +87,26 @@ apt install -qy virtualbox virtualbox-modules virtualbox-dkms
 apt install -qy virtualbox-guest-additions-iso
 mount -oloop /usr/share/virtualbox/VBoxGuestAdditions.iso /mnt
 cd /mnt || exit 2
-/bin/bash VBoxLinuxAdditions.run
-/sbin/rcvboxadd quicksetup all
+if ! [ -f VBoxLinuxAdditions.run ] 
+then
+    echo "[ERR] No VBoxLinuxAdditions.run file!"
+    exit 3
+fi    
+if ! [ -f /sbin/rcvboxadd ] 
+then
+    echo "[ERR] /sbin/rcvboxadd file!"
+    exit 3
+fi    
+if ! /bin/bash VBoxLinuxAdditions.run 
+then
+    echo "[ERR] Error in VBoxLinuxAdditions run."
+    exit 3
+fi    
+if ! /sbin/rcvboxadd quicksetup all
+then
+    echo "[ERR] Error in rcvboxadd run."
+    exit 3
+fi
 cd / || exit 2
 mkdir -p /home/partimag/image
 umount /mnt
@@ -105,6 +123,12 @@ EOF
 
     chroot squashfs-root /bin/bash update_clonezilla.sh
 
+    if [ $? != 0 ]
+    then
+        echo "[ERR] Chroot build failed."
+        exit 5
+    fi
+    
     # after exit now back under live/. Update linux kernel:
 
     if ! [ -f squashfs-root/boot/vmlinuz ] || ! [ -f  squashfs-root/boot/initrd.img ]
