@@ -92,21 +92,11 @@ then
     echo "[ERR] No VBoxLinuxAdditions.run file!"
     exit 3
 fi    
-if ! which rcvboxadd 
-then
-    echo "[ERR] No rcvboxadd!"
-    exit 3
-fi    
 if ! /bin/bash VBoxLinuxAdditions.run 
 then
     echo "[ERR] Error in VBoxLinuxAdditions run."
     exit 3
 fi    
-if ! rcvboxadd quicksetup all
-then
-    echo "[ERR] Error in rcvboxadd run."
-    exit 3
-fi
 cd / || exit 2
 mkdir -p /home/partimag/image
 umount /mnt
