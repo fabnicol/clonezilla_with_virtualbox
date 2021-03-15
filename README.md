@@ -41,7 +41,7 @@ Default value corresponding to file SUMS.txt in this repository is:
    
 https://sourceforge.net/projects/clonezilla/files/clonezilla_live_alternative/20200703-focal/clonezilla-live-20200703-focal-amd64.iso/download
 
-Currently build fail with *groovy* owing to gcc-10 incompatibilities.   
+Currently builds fail with *groovy* owing to gcc-10 incompatibilities.   
     
 **Input ISO**
    
