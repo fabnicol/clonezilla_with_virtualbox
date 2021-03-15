@@ -31,6 +31,34 @@ echo "  "
 }
 
 
+cleanup() {
+
+ if mountpoint mnt
+    then
+        if ! umount -l mnt
+        then
+            echo "[ERR] Could not unmount mnt."
+            echo "[ERR] Fatal. Exiting..."
+            exit 4
+        fi
+    fi
+    rm -rf mnt
+    umount -R -l mnt2
+    rm -rf mnt2
+    rm -rf ISOFILES
+
+    if [ -f "${CLONEZILLACD}" ]
+    then
+        echo "[MSG] Workflow created file ${CLONEZILLACD}."
+        echo "      with following checksums:"
+        echo "      md5sum: $(md5sum ${CLONEZILLACD})"       | tee checksums.txt
+        echo "      sha1sum: $(sha1sum ${CLONEZILLACD})"     | tee -a checksums.txt
+        echo "      sha256sum: $(sha256sum ${CLONEZILLACD})" | tee -a checksums.txt
+    else
+        echo "[ERR] Workflow failed to create file ${CLONEZILLACD}."
+    fi
+}
+
 [ -z "${VERBOSE}" ] && VERBOSE=false
 
 ## @fn add_guest_additions_to_clonezilla_iso()
@@ -61,55 +89,7 @@ add_guest_additions_to_clonezilla_iso() {
 
     bind_mount_clonezilla_iso
 
-    cat > squashfs-root/update_clonezilla.sh << EOF
-#!/bin/bash
-mkdir -p  /boot
-apt update -yq
-apt upgrade -yq <<< 'N'
-
-# We take the oldest supported 5.x linux headers, modules and images
-# Sometimes the most recent ones are not aligned with VB wrt. building.
-# Sometimes current CloneZilla kernel has no corresponding apt headers
-# So replacing with common base for which headers are available and
-# compilation issues probably lesser
-
-headers="\$(apt-cache search ^linux-headers-[5-9]\.[0-9]+.*generic \
-| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
-kernel="\$(apt-cache  search ^linux-image-[5-9]\.[0-9]+.*generic   \
-| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
-modules="\$(apt-cache search ^linux-modules-[5-9]\.[0-9]+.*generic \
-| head -n1 | grep -v unsigned |  cut -f 1 -d' ')"
-apt install -qy "\${headers}"
-apt install -qy "\${kernel}"
-apt install -qy "\${modules}"
-apt install -qy build-essential gcc <<< "N"
-apt install -y virtualbox-sources virtualbox-modules virtualbox-dkms
-apt install -y virtualbox
-apt install -y virtualbox-guest-additions-iso
-mount -oloop /usr/share/virtualbox/VBoxGuestAdditions.iso /mnt
-cd /mnt || exit 2
-if ! [ -f VBoxLinuxAdditions.run ] 
-then
-    echo "[ERR] No VBoxLinuxAdditions.run file!"
-    exit 3
-fi    
-/bin/bash VBoxLinuxAdditions.run
-if ! [ -e /sbin/rcvboxadd ] 
-then
-    echo "[ERR] No /sbin/rcvboxadd!"
-    exit 3
-fi  
-if ! /sbin/rcvboxadd quicksetup $(sed 's/linux-image-//' ${kernel})
-then
-    echo "[ERR] Could not create vbox guest additions module"
-    exit 3
-fi
-cd / || exit 2
-mkdir -p /home/partimag/image
-umount /mnt
-apt autoremove -y -q
-exit
-EOF
+    cp -vf "${VMPATH}/update_clonezilla.sh" squashfs-root/
 
     #  apt remove -y -q "\${headers}" build-essential gcc
     #  virtualbox-guest-additions-iso virtualbox
@@ -123,6 +103,8 @@ EOF
     if [ $? != 0 ]
     then
         echo "[ERR] Chroot build failed."
+	unmount_clonezilla_iso
+	cleanup
         exit 5
     fi
     
@@ -131,6 +113,8 @@ EOF
     if ! [ -f squashfs-root/boot/vmlinuz ] || ! [ -f  squashfs-root/boot/initrd.img ]
     then
         echo "[ERR] Could not find boot files"
+	unmount_clonezilla_iso
+	cleanup
         exit 2
     fi
 
@@ -138,7 +122,10 @@ EOF
     cp -vf --dereference squashfs-root/boot/initrd.img  initrd.img
 
     unmount_clonezilla_iso
-
+    pushd mnt2/live
+    mksquashfs squashfs-root filesystem.squashfs
+    [ $? != 0 ] && echo "[ERR] Could not recreate squashfs filesystem"
+    popd
     [ -f "${CLONEZILLACD}" ] && rm -vf "${CLONEZILLACD}"
 
     # this first ISO image is a "save" one: from virtual disk to clonezilla
@@ -156,33 +143,14 @@ EOF
             -e boot/grub/efi.img \
             -no-emul-boot   -isohybrid-gpt-basdat   -o "${CLONEZILLACD}" mnt2
 
+    if [ $? != 0 ]
+    then
+        echo "[ERR] xorriso failed to create ISO output"
+    fi
+
     # cleaning up
-
-    if mountpoint mnt
-    then
-        if ! umount -l mnt
-        then
-            echo "[ERR] Could not unmount mnt."
-            echo "[ERR] Fatal. Exiting..."
-            exit 4
-        fi
-    fi
-    rm -rf mnt
-    umount -R -l mnt2
-    rm -rf mnt2
-    rm -rf ISOFILES
-
-    if [ -f "${CLONEZILLACD}" ]
-    then
-        echo "[MSG] Workflow created file ${CLONEZILLACD}."
-        echo "      with following checksums:"
-        echo "      md5sum: $(md5sum ${CLONEZILLACD})"       | tee checksums.txt
-        echo "      sha1sum: $(sha1sum ${CLONEZILLACD})"     | tee -a checksums.txt
-        echo "      sha256sum: $(sha256sum ${CLONEZILLACD})" | tee -a checksums.txt
-    else
-        echo "[ERR] Workflow failed to create file ${CLONEZILLACD}."
-    fi
-
+    
+    cleanup
 }
 
 bind_mount_clonezilla_iso() {
@@ -194,7 +162,7 @@ bind_mount_clonezilla_iso() {
     fi
 
     local verb=""
-    "${VERBOSE}" && verb="-v"
+    [ "${VERBOSE}" == "true" ] && verb="-v"
 
     # copy to ISOFILES as a skeletteon for ISO recovery image authoring
 
@@ -212,7 +180,7 @@ bind_mount_clonezilla_iso() {
         exit 1
     fi
 
-    "${VERBOSE}" \
+    [ "${VERBOSE}" == "true" ] \
         && echo "[INF] Now copying CloneZilla files to temporary \
 folder ISOFILES"
     rsync -a mnt2/ ISOFILES
@@ -256,6 +224,8 @@ folder ISOFILES"
     if [ "${res}" != "0" ]
     then
         echo "[ERR] Could not bind-mount squashfs-root"
+	unmount_clonezilla_iso
+	cleanup
         exit 2
     fi
 
@@ -274,28 +244,30 @@ unmount_clonezilla_iso() {
     then
         umount -l squashfs-root/dev{/shm,/pts,}
     fi
+    [ $? != 0 ] && echo "[ERR] Could not unmount squashfs-root/dev"
     if mountpoint -q squashfs-root/run > /dev/null 2>&1
     then
         umount squashfs-root/run
     fi
+    [ $? != 0 ] && echo "[ERR] Could not unmount squashfs-root/run"
     if mountpoint -q squashfs-root/proc
     then
         mount --make-rslave squashfs-root/proc
         umount -l squashfs-root/proc
     fi
+    [ $? != 0 ] && echo "[ERR] Could not unmount squashfs-root/proc"
     if mountpoint -q squashfs-root/sys
     then
         mount --make-rslave squashfs-root/sys
         umount -l squashfs-root/sys
     fi
+    [ $? != 0 ] && echo "[ERR] Could not unmount squashfs-root/sys"
     if mountpoint -q squashfs-root
     then
         umount -R -l  squashfs-root
     fi
     [ $? != 0 ] && echo "[ERR] Could not unmount squashfs-root"
     rm -vf filesystem.squashfs
-    mksquashfs squashfs-root filesystem.squashfs
-    [ $? != 0 ] && echo "[ERR] Could not recreate squashfs filesystem"
     cd "${VMPATH}"
 }
 
@@ -315,7 +287,7 @@ process_clonezilla_iso() {
     # std clonezilla iso is supposed to be in the root directory
     cd "${VMPATH}" || exit 2
     local verb=""
-    "${VERBOSE}" && verb=-v
+    [ "${VERBOSE}" == "true" ] && verb=-v
 
     if [ -f "${INPUT_CLONEZILLA}" ]
     then
@@ -362,13 +334,13 @@ process_clonezilla_iso() {
 
     [ ! -d mnt2 ] &&  mkdir mnt2  ||  { rm ${verb} -rf mnt2 && mkdir mnt2; }
 
-    "${VERBOSE}"  && echo "[INF] Mounting CloneZilla CD ${INPUT_CLONEZILLA}"
+    [ "${VERBOSE}" == "true" ]  && echo "[INF] Mounting CloneZilla CD ${INPUT_CLONEZILLA}"
 
     mount -oloop "${INPUT_CLONEZILLA}" ./mnt  \
      	|| { echo "[ERR] Could not mount ${INPUT_CLONEZILLA} to mnt"
              exit 1; }
 
-    "${VERBOSE}" \
+    [ "${VERBOSE}" == true ] \
         && echo "[INF] Now syncing CloneZilla CD to mnt2 in rw mode."
 
     rsync ${verb} -a ./mnt/ mnt2 \
