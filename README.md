@@ -46,7 +46,7 @@ Currently build fail with *groovy* owing to gcc-10 incompatibilities.
 **Input ISO**
    
 This program will automatically download a copy of the CloneZilla alternative  
-stable ISO file based on Ubuntu Focal (20.06), unless the file is already
+stable ISO file based on Ubuntu Focal (20.07 upgraded), unless the file is already
 present in the root directory.  
 The original file can be retrieved [at this link](https://sourceforge.net/projects/clonezilla/files/clonezilla_live_alternative/20200703-focal/clonezilla-live-20200703-focal-amd64.iso/download).    
 If you use this file, please check that the control sums in SUMS.txt match the file,   
