@@ -61,7 +61,7 @@ then
     echo "[ERR] No /sbin/rcvboxadd!"
     exit 3
 fi  
-if ! /sbin/rcvboxadd quicksetup all #${kernel_version}
+if ! /sbin/rcvboxadd quicksetup ${kernel_version}
 then
     echo "[ERR] Could not create vbox guest additions module"
     exit 3
