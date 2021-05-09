@@ -263,7 +263,7 @@ unmount_clonezilla_iso() {
     echo "[INF] Unmounting host filesystem"
     if mountpoint -q squashfs-root/dev > /dev/null 2>&1
     then
-        umount -l squashfs-root/dev{/pts,}
+        umount -l squashfs-root/dev
     fi
     [ $? != 0 ] && echo "[ERR] Could not unmount squashfs-root/dev"
     if mountpoint -q squashfs-root/run > /dev/null 2>&1
