@@ -325,6 +325,7 @@ process_clonezilla_iso() {
     local md5_
     local sha1
     local sha1_
+    echo "[INF] File: ${INPUT_CLONEZILLA}, size: $(du -hs ${INPUT_CLONEZILLA})"
     md5=$(md5sum "${INPUT_CLONEZILLA}"   | cut -d' ' -f 1)
     md5_=$(cat SUMS.txt | grep MD5SUM    | cut -d' ' -f 2)
     sha1=$(sha1sum "${INPUT_CLONEZILLA}" | cut -d' ' -f 1)
