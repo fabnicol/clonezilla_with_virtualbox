@@ -106,7 +106,7 @@ cleanup() {
 add_guest_additions_to_clonezilla_iso() {
 
     VMPATH=$PWD
-
+ mount --make-rslave squashfs-root/proc
     bind_mount_clonezilla_iso
 
     cp -vf "${VMPATH}/update_clonezilla.sh" squashfs-root/
@@ -263,7 +263,8 @@ unmount_clonezilla_iso() {
     echo "[INF] Unmounting host filesystem"
     if mountpoint -q squashfs-root/dev > /dev/null 2>&1
     then
-        umount -l squashfs-root/dev
+       mount --make-rslave squashfs-root/dev
+       umount -l squashfs-root/dev
     fi
     [ $? != 0 ] && echo "[ERR] Could not unmount squashfs-root/dev"
     if mountpoint -q squashfs-root/run > /dev/null 2>&1
