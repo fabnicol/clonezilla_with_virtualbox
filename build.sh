@@ -142,10 +142,11 @@ add_guest_additions_to_clonezilla_iso() {
     cp -vf --dereference squashfs-root/boot/initrd.img  initrd.img
 
     unmount_clonezilla_iso
-    pushd mnt2/live
+    ! [ -d mnt2/live ] && echo "[ERR] Could not find mnt2/live" && exit 1
+    cd mnt2/live
     mksquashfs squashfs-root filesystem.squashfs
     [ $? != 0 ] && echo "[ERR] Could not recreate squashfs filesystem"
-    popd
+    cd -
     [ -f "${CLONEZILLACD}" ] && rm -vf "${CLONEZILLACD}"
 
     # this first ISO image is a "save" one: from virtual disk to clonezilla
