@@ -44,7 +44,7 @@ https://sourceforge.net/projects/clonezilla/files/clonezilla_live_alternative_te
 **Input ISO**
    
 This program will automatically download a copy of the CloneZilla alternative  
-stable ISO file based on Ubuntu Focal (20.07 upgraded), unless the file is already
+stable ISO file based on Ubuntu Hirsute (21.04), unless the file is already
 present in the root directory.  
 The original file can be retrieved with the above link.    
 If you use this file, please check that the control sums in SUMS.txt match the file,   
