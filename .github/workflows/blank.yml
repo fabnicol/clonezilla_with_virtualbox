@@ -21,7 +21,14 @@ jobs:
         run: |
           sudo apt install util-linux squashfs-tools curl mkisofs xorriso xz-utils
           sudo ./build.sh clonezilla.iso clonezilla_with_virtualbox.iso
-     
+
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+            delete_release: true # default: false
+            tag_name: release-master # tag name to delete
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload Release Assets
         run: |
             set -x
@@ -29,13 +36,11 @@ jobs:
             for asset in "./clonezilla_with_virtualbox.iso" "./checksums.txt"; do
             assets+=("-a" "$asset")
             done
-            tag_name="${GITHUB_REF##*/}"
+            tag_name="release-master"
             hub release create  "${assets[@]}" \
             -m "Release $tag_name" \
             -m "This release was automatically created by the Git Actions workflow corresponding to directory .github in the repository." \
-            -m "The input of this release is the CloneZilla release linked to in the Readme." "$tag_name"
+            -m "The input of this release is the CloneZilla release linked to in the Readme." \
+            "$tag_name"
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-     
-      
-      
