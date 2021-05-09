@@ -182,7 +182,7 @@ bind_mount_clonezilla_iso() {
     fi
 
     local verb=""
-    [ "${VERBOSE}" == "true" ] && verb="-v"
+    [ "${VERBOSE}" = "true" ] && verb="-v"
 
     # copy to ISOFILES as a skeletteon for ISO recovery image authoring
 
@@ -200,7 +200,7 @@ bind_mount_clonezilla_iso() {
         exit 1
     fi
 
-    [ "${VERBOSE}" == "true" ] \
+    [ "${VERBOSE}" = "true" ] \
         && echo "[INF] Now copying CloneZilla files to temporary \
 folder ISOFILES"
     rsync -a mnt2/ ISOFILES
@@ -307,7 +307,7 @@ process_clonezilla_iso() {
     # std clonezilla iso is supposed to be in the root directory
     cd "${VMPATH}" || exit 2
     local verb=""
-    [ "${VERBOSE}" == "true" ] && verb=-v
+    [ "${VERBOSE}" = "true" ] && verb=-v
 
     if [ -f "${INPUT_CLONEZILLA}" ]
     then
@@ -354,13 +354,13 @@ process_clonezilla_iso() {
 
     [ ! -d mnt2 ] &&  mkdir mnt2  ||  { rm ${verb} -rf mnt2 && mkdir mnt2; }
 
-    [ "${VERBOSE}" == "true" ]  && echo "[INF] Mounting CloneZilla CD ${INPUT_CLONEZILLA}"
+    [ "${VERBOSE}" = "true" ]  && echo "[INF] Mounting CloneZilla CD ${INPUT_CLONEZILLA}"
 
     mount -oloop "${INPUT_CLONEZILLA}" ./mnt  \
      	|| { echo "[ERR] Could not mount ${INPUT_CLONEZILLA} to mnt"
              exit 1; }
 
-    [ "${VERBOSE}" == true ] \
+    [ "${VERBOSE}" = true ] \
         && echo "[INF] Now syncing CloneZilla CD to mnt2 in rw mode."
 
     rsync ${verb} -a ./mnt/ mnt2 \
