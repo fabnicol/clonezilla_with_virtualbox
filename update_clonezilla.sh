@@ -50,6 +50,8 @@ else
 	exit 8
     fi
     echo "[MSG] Found kernel headers: ${headers}"
+    echo "[MSG] Found kernel: ${kernel}"
+    echo "[MSG] Found kernel modules: ${modules}"
     sleep 7
 fi
 echo "-------------------------"
@@ -61,9 +63,10 @@ echo "[MSG] modules: ${modules}"
 echo 
 echo "------------------------"
 sleep 7
-apt install -qy "${headers}"
-apt install -qy "${kernel}"
-apt install -qy "${modules}"
+apt install --reinstall -qy "${headers}"
+apt install --reinstall -qy "${kernel}"
+apt install --reinstall -qy "${modules}"
+sleep 20
 apt install -qy build-essential gcc <<< "N"
 apt install -y virtualbox-sources virtualbox-modules virtualbox-dkms
 apt install -y virtualbox
