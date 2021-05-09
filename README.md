@@ -39,16 +39,14 @@ In this case, the user should reset the contents of file SUMS.txt accordingly,
 by checking the sums on sourceforge.  
 Default value corresponding to file SUMS.txt in this repository is:   
    
-https://sourceforge.net/projects/clonezilla/files/clonezilla_live_alternative/20200703-focal/clonezilla-live-20200703-focal-amd64.iso/download
-
-Currently builds fail with *groovy* owing to gcc-10 incompatibilities.   
+https://sourceforge.net/projects/clonezilla/files/clonezilla_live_alternative_testing/20210505-hirsute/clonezilla-live-20210505-hirsute-amd64.iso/download
     
 **Input ISO**
    
 This program will automatically download a copy of the CloneZilla alternative  
 stable ISO file based on Ubuntu Focal (20.07 upgraded), unless the file is already
 present in the root directory.  
-The original file can be retrieved [at this link](https://sourceforge.net/projects/clonezilla/files/clonezilla_live_alternative/20200703-focal/clonezilla-live-20200703-focal-amd64.iso/download).    
+The original file can be retrieved with the above link.    
 If you use this file, please check that the control sums in SUMS.txt match the file,   
 or download the file again from the link above.   
 The checksums themselves can be verified at the same link (click on   
