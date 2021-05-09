@@ -28,9 +28,8 @@ INPUT_CLONEZILLA="$1"
 CLONEZILLACD="$2"
 if [ -z "${DOWNLOAD_CLONEZILLA_PATH}" ]
 then
-    DOWNLOAD_CLONEZILLA_PATH="https://sourceforge.net/projects/clonezilla/files/\
-clonezilla_live_alternative\
-/20200703-focal/clonezilla-live-20200703-focal-amd64.iso/download"
+    DOWNLOAD_CLONEZILLA_PATH="https://sourceforge.net/projects/clonezilla/files/clonezilla_live_alternative_testing/\
+20210505-hirsute/clonezilla-live-20210505-hirsute-amd64.iso/download"
 fi
 
 [ "$(whoami)" != "root" ] && { echo "[ERR] must be root to proceed"; exit 1; }
